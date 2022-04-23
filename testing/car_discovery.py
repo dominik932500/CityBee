@@ -4,20 +4,12 @@ import requests
 import time
 import datetime
 import discord_bot
-import configparser
-from pathlib import Path
-
-p = Path(__file__)
-script_pwd = p.parent.absolute()
-
-config = configparser.ConfigParser()
-config.read(str(script_pwd) + "/config.ini")
 
 mydb = mysql.connector.connect(
-	host = config.get("db", "host"),
-	user = config.get("db", "user"),
-	password = config.get("db", "password"),
-	database = config.get("db", "database")
+	host="localhost",
+	user="citybee",
+	password="citybee",
+	database="citybee"
 )
 mycursor = mydb.cursor()
 

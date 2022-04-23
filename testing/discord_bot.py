@@ -1,24 +1,16 @@
 import datetime
 import discord
 import mysql.connector
-import configparser
-from pathlib import Path
-
-p = Path(__file__)
-script_pwd = p.parent.absolute()
-
-config = configparser.ConfigParser()
-config.read(str(script_pwd) + "/config.ini")
+token = 'ODc2Mzk1MTk1OTEzMTA1NDQ5.YRjcoQ.3eimYkCIBfew4C03rrLAI8M2lEc'
 
 mydb = mysql.connector.connect(
-	host = config.get("db", "host"),
-	user = config.get("db", "user"),
-	password = config.get("db", "password"),
-	database = config.get("db", "database")
+	host="localhost",
+	user="citybee",
+	password="citybee",
+	database="citybee"
 )
 mycursor = mydb.cursor()
 
-token = config.get("discord", "token")
 
 client = discord.Client()
 
@@ -33,7 +25,6 @@ def mainer(count):
 	sql = 'select id, make, model, license_plate, country,first_seen from cars where first_seen IS NOT NULL order by first_seen desc, license_plate asc limit ' + str(count) + ';'
 	mycursor.execute(sql)
 	data = mycursor.fetchall()
-	channel_id = int(config.get("discord", "channel_id"))
 #	print("Total number of rows in table: ", mycursor.rowcount)
 	data_id = []
 	data_make = []
@@ -59,7 +50,7 @@ def mainer(count):
 	@client.event
 	async def on_ready():
 		print('We have logged in as {0.user}'.format(client))
-		channel = client.get_channel(channel_id)
+		channel = client.get_channel(876396025877790731)
 		await channel.send(notification + message)
 		await client.close()
 	client.run(token)
