@@ -15,7 +15,7 @@ import_pwd = '/home/pi/program/citybee/import/*'
 
 countries = ["lt", "lv", "ee"]
 files_list = sorted(glob.glob(import_pwd))
-#files_list = ['/home/pi/program/citybee/import/carlist_LT_2019-10.txt']
+##files_list = ['/home/pi/program/citybee/import/carlist_LT_2019-10.txt']
 
 for i in files_list:
 	print(i)
