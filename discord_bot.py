@@ -26,7 +26,32 @@ def main(count):
 	begin_time = datetime.datetime.now()
 	mainer(count)
 	print(datetime.datetime.now() - begin_time)
+	license_plate()
 
+def license_plate(new_license_plates, country):
+	channel_id_plates = int(config.get("discord", "channel_id_plates"))
+	message = ''
+	old_plate = old_make = old_model = old_country = ''
+	for n in range(0, len(new_license_plates)):
+		new_plate = new_license_plates[n][1]
+		id = str(new_license_plates[n][0])
+		sql = 'select id, license_plate, make, model, country from cars_import WHERE id = ' + id + ' AND COUNTRY = ' + '"' + country + '";'
+		mycursor.execute(sql)
+		data = mycursor.fetchall()
+		for row in data:
+			old_plate = row[1]
+			old_make = row[2]
+			old_model = row[3]
+			old_country = row[4]
+		message = str(message) + old_make + ' ' + old_model + ' ' + old_country + ' ' + old_plate + ' > ' + new_plate + "\n"
+	print(message)
+	client2 = discord.Client()
+	@client2.event
+	async def on_ready():
+		channel = client2.get_channel(channel_id_plates)
+		await channel.send(message)
+		await client2.close()
+	client2.run(token)
 
 def mainer(count):
 #	counter = 5
