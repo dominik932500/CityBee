@@ -34,6 +34,7 @@ def main():
 def car_discovery():
 
 	current_cars = []
+	new_license_plates = []
 	count = 0
 	for i in countries:
 		print(i) #Country TAG
@@ -50,6 +51,7 @@ def car_discovery():
 
 		legacy = 0
 		cars_amount = len(data_import)
+#		cars_amount = 5
 		for n in range(0, cars_amount):
 			id = data_import[n]["id"]
 			license_plate = data_import[n]["license_plate"]
@@ -66,8 +68,25 @@ def car_discovery():
 				print("row count", mycursor.rowcount)
 				count = count + mycursor.rowcount
 				print(count)
-			except Exception as e: pass # print(e)
+			except Exception as e: pass #print(e)
+
+		now = datetime.datetime.now()
+		if now.hour == 15:
+			for n in range(0, cars_amount):
+				id = str(data_import[n]["id"])
+				license_plate = str(data_import[n]["license_plate"])
+				print(id, license_plate)
+				try:
+					sql = 'UPDATE cars SET license_plate = "' + license_plate + '" WHERE id = ' + id + ';'
+					mycursor.execute(sql)
+					if mycursor.rowcount > 0:
+						updated_car_details = [id, license_plate]
+						new_license_plates.append(updated_car_details)
+				except Exception as e: print(e)
 		mydb.commit()
+		if len(new_license_plates) > 0:
+			print("calling license plate")
+			discord_bot.license_plate(new_license_plates, i)
 	if count > 0:
 		discord_bot.main(count)
 	car_legacy(current_cars)
@@ -75,17 +94,12 @@ def car_discovery():
 
 def car_legacy(current_cars):
 	all_cars = []
-	print(len(current_cars))
 	car_list_sql = 'SELECT id from cars;'
 	mycursor.execute(car_list_sql)
 	car_list_id = mycursor.fetchall()
-	print("Total number of rows in table: ", mycursor.rowcount)
 	for row in car_list_id:
 		str(all_cars.append(str(row[0])))
 	legacy_cars = list(set(all_cars) - set(current_cars))
-	print(len(all_cars))
-	print(len(current_cars))
-	print(len(legacy_cars))
 
 	try:
 		legacy = '1'
