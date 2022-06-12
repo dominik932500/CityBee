@@ -104,6 +104,8 @@ def car_legacy(current_cars):
 		for i in legacy_cars:
 			legacy = '1'
 			mycursor.execute("UPDATE cars SET legacy=%s WHERE id=%s", (legacy, i))
+			if mycursor.rowcount > 0:
+				discord_bot.legacy_cars(i)
 		mydb.commit()
 		legacy = '0'
 	except Exception as e: print(e)

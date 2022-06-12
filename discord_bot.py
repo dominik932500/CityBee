@@ -30,10 +30,7 @@ def main(count):
 #	license_plate()
 
 def license_plate(new_license_plates, country):
-	channel_id_plates = int(config.get("discord", "channel_id_plates"))
 	channel_plates_webhook = config.get("discord", "channel_plates_webhook")
-	message = ''
-	old_plate = old_make = old_model = old_country = ''
 	for n in range(0, len(new_license_plates)):
 		new_plate = new_license_plates[n][1]
 		id = str(new_license_plates[n][0])
@@ -46,13 +43,25 @@ def license_plate(new_license_plates, country):
 			old_model = row[3]
 			old_country = row[4]
 		message = old_make + ' ' + old_model + ' ' + old_country + ' ' + old_plate + ' > ' + new_plate
-		print("old:", old_plate, "new:", new_plate)
 		if old_plate.strip() != new_plate.strip():
-			message_sender(message, channel_id_plates, channel_plates_webhook)
+			message_sender(message, channel_plates_webhook)
 			print(message)
 
-def message_sender(message, channel_id, channel_plates_webhook):
-	discord = Discord(url=channel_plates_webhook)
+def legacy_cars(legacy_id):
+	channel_legacy_webhook = config.get("discord", "channel_legacy_webhook")
+	sql = 'select id, license_plate, make, model, country from cars WHERE id = "' + legacy_id + '";'
+	mycursor.execute(sql)
+	data = mycursor.fetchall()
+	for row in data:
+		legacy_plate = row[1]
+		legacy_make = row[2]
+		legacy_model = row[3]
+		legacy_country = row[4]
+	message = legacy_make + ' ' + legacy_model + ' ' + legacy_plate + ' ' + legacy_country
+	message_sender(message, channel_legacy_webhook)
+
+def message_sender(message, webhook):
+	discord = Discord(url=webhook)
 	discord.post(content=message)
 
 def mainer(count):
