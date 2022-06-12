@@ -22,6 +22,7 @@ mycursor = mydb.cursor()
 changes = 0
 
 countries = ["lt", "lv", "ee"]
+#countries = ['lv'] ###for testing
 
 for i in countries:
 	print(i)
@@ -38,7 +39,7 @@ for i in countries:
 
 	cars_amount = len(data_import)
 	for n in range(0, cars_amount):
-		id = data_import[n]["id"]
+		id = str(data_import[n]["id"]) + i
 		price = data_import[n]["price"]
 		address = data_import[n]["address"]
 		city = data_import[n]["city"]
@@ -49,14 +50,8 @@ for i in countries:
 		except:
 			pass
 
-#		print(n, id, price, address, city)
-#		print(price, address, city, current_time, id, i)
-
-#id   | make          | model         | license_plate | country | last_loc_lat | last_loc_long | last_loc_address | last_loc_city | last_seen_date | first_seen | price
-#id   | make          | model         | license_plate | country | last_loc_address                   | last_loc_city         | last_seen_date      | first_seen | price
-		mycursor.execute("UPDATE cars SET price=%s, last_loc_address=%s, last_loc_city=%s, last_seen_date=%s WHERE id=%s AND country=%s", (price, address, city, current_time, id, i))
+		mycursor.execute("UPDATE cars SET price=%s, last_loc_address=%s, last_loc_city=%s, last_seen_date=%s, legacy=%s WHERE id=%s AND country=%s", (price, address, city, current_time, 0, id, i))
 	mydb.commit()
 #	print(mycursor.rowcount, "record inserted.")
 changes = changes + mycursor.rowcount
 
-#print(changes)

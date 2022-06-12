@@ -2,6 +2,7 @@ import datetime
 import discord
 import mysql.connector
 import configparser
+from discordwebhook import Discord
 from pathlib import Path
 
 p = Path(__file__)
@@ -26,10 +27,11 @@ def main(count):
 	begin_time = datetime.datetime.now()
 	mainer(count)
 	print(datetime.datetime.now() - begin_time)
-	license_plate()
+#	license_plate()
 
 def license_plate(new_license_plates, country):
 	channel_id_plates = int(config.get("discord", "channel_id_plates"))
+	channel_plates_webhook = config.get("discord", "channel_plates_webhook")
 	message = ''
 	old_plate = old_make = old_model = old_country = ''
 	for n in range(0, len(new_license_plates)):
@@ -43,15 +45,15 @@ def license_plate(new_license_plates, country):
 			old_make = row[2]
 			old_model = row[3]
 			old_country = row[4]
-		message = str(message) + old_make + ' ' + old_model + ' ' + old_country + ' ' + old_plate + ' > ' + new_plate + "\n"
-	print(message)
-	client2 = discord.Client()
-	@client2.event
-	async def on_ready():
-		channel = client2.get_channel(channel_id_plates)
-		await channel.send(message)
-		await client2.close()
-	client2.run(token)
+		message = old_make + ' ' + old_model + ' ' + old_country + ' ' + old_plate + ' > ' + new_plate
+		print("old:", old_plate, "new:", new_plate)
+		if old_plate.strip() != new_plate.strip():
+			message_sender(message, channel_id_plates, channel_plates_webhook)
+			print(message)
+
+def message_sender(message, channel_id, channel_plates_webhook):
+	discord = Discord(url=channel_plates_webhook)
+	discord.post(content=message)
 
 def mainer(count):
 #	counter = 5
