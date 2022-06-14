@@ -31,11 +31,11 @@ def main(count):
 
 def license_plate(new_license_plates, country):
 	channel_plates_webhook = config.get("discord", "channel_plates_webhook")
+	old_plate = old_make = old_model = old_country = ''
 	for n in range(0, len(new_license_plates)):
 		new_plate = new_license_plates[n][1]
 		id = str(new_license_plates[n][0])
-		sql = 'select id, license_plate, make, model, country from cars_import WHERE id = ' + id + ' AND COUNTRY = ' + '"' + country + '";'
-		mycursor.execute(sql)
+		mycursor.execute("select id, license_plate, make, model, country from cars_import WHERE id=%s AND COUNTRY=%s", (id, country))
 		data = mycursor.fetchall()
 		for row in data:
 			old_plate = row[1]

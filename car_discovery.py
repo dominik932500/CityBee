@@ -71,11 +71,10 @@ def car_discovery():
 		now = datetime.datetime.now()
 		if now.hour == 14:
 			for n in range(0, cars_amount):
-				id = str(data_import[n]["id"])
+				id = str(data_import[n]["id"]) + i
 				license_plate = str(data_import[n]["license_plate"])
 				try:
-					sql = 'UPDATE cars SET license_plate = "' + license_plate + '" WHERE id = ' + id + ' AND COUNTRY = ' + '"' + i + '";'
-					mycursor.execute(sql)
+					mycursor.execute("UPDATE cars SET license_plate=%s WHERE id=%s AND COUNTRY=%s", (license_plate, id, i.upper()))
 					if mycursor.rowcount > 0:
 						updated_car_details = [id, license_plate]
 						new_license_plates.append(updated_car_details)
