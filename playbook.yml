@@ -1,0 +1,68 @@
+---
+- hosts: "{{ hostname | default('none') }}"
+  gather_facts: no
+  become: yes
+
+  tasks:
+  - name: Include config vars
+    include_vars:
+      file: config.yml
+      name: config
+    no_log: true
+    tags: always
+
+  - name: Check if MySQL is installed
+    mysql_info:
+    register: mysql_status
+    failed_when: false
+    tags: mysql, mysql_install
+
+  - name: Download MySQL deb package
+    uri: 
+      url: https://dev.mysql.com/get/mysql-apt-config_0.8.22-1_all.deb
+      dest: /tmp/mysql-apt.deb
+    when: mysql_status.msg is defined
+    tags: mysql, mysql_install
+
+
+  - name: Add MySQL deb package
+    apt:
+      deb: /tmp/mysql-apt.deb
+    when: mysql_status.msg is defined
+    tags: mysql, mysql_install
+
+  - name: Install MySQL and dependencies
+    package:
+      name: "{{ item }}"
+      state: present
+      update_cache: yes
+    loop:
+       - mysql-server
+       - mysql-client 
+       - python3-mysqldb
+       - libmysqlclient-dev
+    when: mysql_status.msg is defined
+    tags: mysql, mysql_install
+
+  - name: Create a new database with name {{ config.db.database }}
+    community.mysql.mysql_db:
+      name: "{{ config.db.database }}"
+      state: present
+      login_unix_socket: /run/mysqld/mysqld.sock
+    tags: mysql, mysql_setup
+
+  - name: Import schema to {{ config.db.database }} database
+    community.mysql.mysql_db:
+      name: "{{ config.db.database }}"
+      state: import
+      target: "{{ config.system.pwd }}/database/main_db_import.sql"
+    tags: mysql, mysql_setup
+
+
+  - name: Create {{ config.db.user }} user for {{ config.db.database }} database
+    mysql_user:
+      name: "{{ config.db.user }}"
+      password: "{{ config.db.password }}"
+      priv: "{{ config.db.database }}.*:ALL"
+      state: present
+    tags: mysql, mysql_setup
