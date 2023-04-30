@@ -1,27 +1,29 @@
+#!/usr/bin/python3
 import datetime
 import discord
 import mysql.connector
-import configparser
+import yaml
 from discordwebhook import Discord
 from pathlib import Path
 
 p = Path(__file__)
 script_pwd = p.parent.absolute()
 
-config = configparser.ConfigParser()
-config.read(str(script_pwd) + "/config.ini")
+with open(str(script_pwd) + "/config.yml") as f:
+	config = yaml.load(f, Loader = yaml.FullLoader)
 
 mydb = mysql.connector.connect(
-	host = config.get("db", "host"),
-	user = config.get("db", "user"),
-	password = config.get("db", "password"),
-	database = config.get("db", "database")
+	host = config["db"]["host"],
+	user = config["db"]["user"],
+	password = config["db"]["password"],
+	database = config["db"]["database"]
 )
+
 mycursor = mydb.cursor()
 
-token = config.get("discord", "token")
+token = config["discord"]["token"]
 
-client = discord.Client()
+client = discord.Client(intents=discord.Intents.default())
 
 def main(count):
 	begin_time = datetime.datetime.now()
@@ -30,7 +32,7 @@ def main(count):
 #	license_plate()
 
 def license_plate(new_license_plates, country):
-	channel_plates_webhook = config.get("discord", "channel_plates_webhook")
+	channel_plates_webhook = config["discord"]["channel_plates_webhook"]
 	old_plate = old_make = old_model = old_country = ''
 	for n in range(0, len(new_license_plates)):
 		new_plate = new_license_plates[n][1]
@@ -48,7 +50,7 @@ def license_plate(new_license_plates, country):
 			print(message)
 
 def legacy_cars(legacy_id):
-	channel_legacy_webhook = config.get("discord", "channel_legacy_webhook")
+	channel_legacy_webhook = config["discord"]["channel_legacy_webhook"]
 	sql = 'select id, license_plate, make, model, country from cars WHERE id = "' + legacy_id + '";'
 	mycursor.execute(sql)
 	data = mycursor.fetchall()
@@ -69,7 +71,7 @@ def mainer(count):
 	sql = 'select id, make, model, license_plate, country,first_seen from cars where first_seen IS NOT NULL order by first_seen desc, license_plate asc limit ' + str(count) + ';'
 	mycursor.execute(sql)
 	data = mycursor.fetchall()
-	channel_id = int(config.get("discord", "channel_id"))
+	channel_id = int(config["discord"]["channel_id"])
 #	print("Total number of rows in table: ", mycursor.rowcount)
 	data_id = []
 	data_make = []

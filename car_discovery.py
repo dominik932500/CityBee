@@ -1,23 +1,24 @@
+#!/usr/bin/python3
 import json
 import mysql.connector
 import requests
 import time
 import datetime
 import discord_bot
-import configparser
+import yaml
 from pathlib import Path
 
 p = Path(__file__)
 script_pwd = p.parent.absolute()
 
-config = configparser.ConfigParser()
-config.read(str(script_pwd) + "/config.ini")
+with open(str(script_pwd) + "/config.yml") as f:
+	config = yaml.load(f, Loader = yaml.FullLoader)
 
 mydb = mysql.connector.connect(
-	host = config.get("db", "host"),
-	user = config.get("db", "user"),
-	password = config.get("db", "password"),
-	database = config.get("db", "database")
+	host = config["db"]["host"],
+	user = config["db"]["user"],
+	password = config["db"]["password"],
+	database = config["db"]["database"]
 )
 mycursor = mydb.cursor()
 
@@ -38,9 +39,9 @@ def car_discovery():
 	for i in countries:
 		print(i) #Country TAG
 		url = "https://backend.citybee." + i + "/api/CarsLive/GetCarsDetails"
-		headers={'Client':'SelfService', 'Country':'LT'}
+		headers = {'Client':'SelfService', 'Country':'LT'}
 
-		resp = requests.get(url,headers=headers)
+		resp = requests.get(url, headers=headers)
 
 		ts = time.gmtime()
 		first_seen = time.strftime("%Y-%m-%d %H:%M:%S", ts)

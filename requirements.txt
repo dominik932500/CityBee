@@ -1,4 +1,5 @@
 discord.py
 discordwebhook
 mysql-connector-python
-Requests
+pyyaml
+requests
