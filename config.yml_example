@@ -1,0 +1,17 @@
+---
+db:
+  host: localhost
+  user: citybee
+  password: citybee
+  database: citybee
+
+system:
+  pwd: /home/projects/CityBee
+
+discord:
+  token: 0Dc2XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  channel_id: XXXXXXXXXXXXXXXXXX
+  channel_id_plates: XXXXXXXXXXXXXXXXXX
+  channel_id_legacy: XXXXXXXXXXXXXXXXXX
+  channel_plates_webhook: https://discord.com/api/webhooks/XXXXXXXXXXXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  channel_legacy_webhook: https://discord.com/api/webhooks/XXXXXXXXXXXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX

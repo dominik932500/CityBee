@@ -1,0 +1,4 @@
+discord.py
+discordwebhook
+mysql-connector-python
+Requests

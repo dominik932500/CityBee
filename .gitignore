@@ -1,0 +1,5 @@
+.playbook.yml.swp
+ansible.cfg
+venv
+config.yml
+__pycache__/
