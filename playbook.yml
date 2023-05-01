@@ -24,7 +24,6 @@
     when: mysql_status.msg is defined
     tags: mysql, mysql_install
 
-
   - name: Add MySQL deb package
     apt:
       deb: /tmp/mysql-apt.deb
@@ -58,7 +57,6 @@
       target: "{{ config.system.pwd }}/database/main_db_import.sql"
     tags: mysql, mysql_setup
 
-
   - name: Create {{ config.db.user }} user for {{ config.db.database }} database
     mysql_user:
       name: "{{ config.db.user }}"
@@ -66,3 +64,16 @@
       priv: "{{ config.db.database }}.*:ALL"
       state: present
     tags: mysql, mysql_setup
+
+  - name: Install Adminer
+    apt:
+      name: adminer
+      state: present
+    tags: adminer, never
+
+  - name: Make Adminer web GUI accessible
+    file:
+      src: /usr/share/adminer/adminer.php
+      dest: /var/www/html/adminer.php
+      state: link
+    tags: adminer, never
